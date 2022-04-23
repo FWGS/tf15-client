@@ -744,7 +744,7 @@ void CHudSpectator::DirectorMessage( int iSize, void *pbuf )
 		gViewPort->UpdateSpectatorPanel();
 		break;
 	case DRC_CMD_STUFFTEXT:
-		ClientCmd( READ_STRING() );
+		gEngfuncs.pfnFilteredClientCmd( READ_STRING() );
 		break;
 	case DRC_CMD_CAMPATH:
 		if ( m_autoDirector->value )
