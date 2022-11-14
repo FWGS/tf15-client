@@ -752,7 +752,7 @@ int TeamFortressViewport::CreateCommandMenu( char *menuFile, int direction, int 
 				{
 					// Get the mapname
 					pfile = gEngfuncs.COM_ParseFile( pfile, token );
-					strncpy( szMap, token, MAX_MAPNAME );
+					strncpy( szMap, token, MAX_MAPNAME - 1 );
 					szMap[MAX_MAPNAME - 1] = '\0';
 
 					// Get the next token
@@ -1548,7 +1548,7 @@ void TeamFortressViewport::UpdateSpectatorPanel()
 		// create player & health string
 		if ( player && name )
 		{
-			strncpy( bottomText, name, sizeof( bottomText ) );
+			strncpy( bottomText, name, sizeof( bottomText ) - 1 );
 			bottomText[sizeof( bottomText ) - 1] = 0;
 			pBottomText = bottomText;
 		}
@@ -1742,7 +1742,7 @@ CMenuPanel *TeamFortressViewport::CreateTextWindow( int iTextToShow )
 
 		cText = pfile;
 
-		strncpy( cTitle, m_sMapName, MAX_TITLE_LENGTH );
+		strncpy( cTitle, m_sMapName, MAX_TITLE_LENGTH - 1 );
 		cTitle[MAX_TITLE_LENGTH - 1] = 0;
 	}
 	else if ( iTextToShow == SHOW_CLASSDESC )
@@ -2403,7 +2403,7 @@ int TeamFortressViewport::MsgFunc_ServerName( const char *pszName, int iSize, vo
 {
 	BEGIN_READ( pbuf, iSize );
 
-	strncpy( m_szServerName, READ_STRING(), sizeof( m_szServerName ) );
+	strncpy( m_szServerName, READ_STRING(), sizeof( m_szServerName ) - 1 );
 	m_szServerName[sizeof( m_szServerName ) - 1] = 0;
 
 	return 1;
