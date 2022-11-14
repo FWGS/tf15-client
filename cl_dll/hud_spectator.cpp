@@ -617,7 +617,7 @@ int CHudSpectator::Draw( float flTime )
 		color = GetClientColor( i + 1 );
 
 		// draw the players name and health underneath
-		sprintf( string, "%s", g_PlayerInfoList[i + 1].name );
+		strcpy( string, g_PlayerInfoList[i + 1].name );
 
 		lx = strlen( string ) * 3; // 3 is avg. character length :)
 
