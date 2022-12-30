@@ -158,7 +158,6 @@ bool isMouseRelative = false;
 
 #ifdef _WIN32
 #include "progdefs.h"
-extern globalvars_t *gpGlobals;
 #endif
 
 int CL_IsDead( void );
@@ -780,9 +779,10 @@ void GoldSourceInput::IN_GetMouseDelta( int *pOutX, int *pOutY )
 
 #ifdef _WIN32
 		// update m_bRawInput occasionally:
-		if ( gpGlobals && gpGlobals->time - s_flRawInputUpdateTime > 1.0f )
+		const float currentTime = gEngfuncs.GetClientTime();
+		if ( currentTime  - s_flRawInputUpdateTime > 1.0f  || s_flRawInputUpdateTime == 0.0f )
 		{
-			s_flRawInputUpdateTime = gpGlobals->time;
+			s_flRawInputUpdateTime = currentTime;
 
 			bool lockEntered = MouseThread_ActiveLock_Enter();
 
