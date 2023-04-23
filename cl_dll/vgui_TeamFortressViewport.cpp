@@ -870,7 +870,7 @@ int TeamFortressViewport::CreateCommandMenu( char *menuFile, int direction, int 
 					{
 						gEngfuncs.Con_Printf( "Too many menus in %s past '%s'\n", menuFile, szLastButtonText );
 					}
-					else
+					else if( pButton )
 					{
 						// Create the menu
 						m_pCommandMenus[m_iNumMenus] = CreateSubMenu( pButton, m_pCurrentCommandMenu, iButtonY );
