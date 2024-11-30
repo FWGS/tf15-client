@@ -49,6 +49,7 @@ void CHudMenu::InitHUDData( void )
 {
 	m_fMenuDisplayed = 0;
 	m_bitsValidSlots = 0;
+	m_iFlags &= ~HUD_ACTIVE;
 	Reset();
 }
 
