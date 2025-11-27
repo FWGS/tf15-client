@@ -122,7 +122,7 @@ if(ANDROID OR CMAKE_SIZEOF_VOID_P EQUAL 8 OR VITA)
         target_compile_options(vgui_support PRIVATE -fPIC)
     endif()
 elseif(BUILD_VGUI)
-    add_subdirectory(3rdparty/vgui_dll)
+	add_subdirectory(3rdparty/vgui_dll)
 endif()
 
 if(BUILD_PMAN)
@@ -130,30 +130,32 @@ if(BUILD_PMAN)
 	add_subdirectory(3rdparty/particleman)
 endif()
 
-set(EXTRAS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/tf15client-extras")
-file(GLOB_RECURSE EXTRAS_FILES "${EXTRAS_DIR}/*")
-
-set(EXTRAS_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/extras.pk3")
-
-add_custom_command(
-	OUTPUT ${EXTRAS_OUTPUT}
-	COMMAND ${Python_EXECUTABLE}
-			${CMAKE_CURRENT_SOURCE_DIR}/scripts/pack_extras.py
-			${EXTRAS_DIR}
-			${EXTRAS_OUTPUT}
-	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/pack_extras.py
-			${EXTRAS_FILES}
-	COMMENT "Generating extras.pk3..."
-)
-
-add_custom_target(generate_extras ALL
-	DEPENDS ${EXTRAS_OUTPUT}
-)
-
-install(
-	FILES "${EXTRAS_OUTPUT}"
-	DESTINATION ${GAME_DIR}
-)
+if(NOT ANDROID)
+	set(EXTRAS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/tf15client-extras")
+	file(GLOB_RECURSE EXTRAS_FILES "${EXTRAS_DIR}/*")
+	
+	set(EXTRAS_OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/extras.pk3")
+	
+	add_custom_command(
+		OUTPUT ${EXTRAS_OUTPUT}
+		COMMAND ${Python_EXECUTABLE}
+				${CMAKE_CURRENT_SOURCE_DIR}/scripts/pack_extras.py
+				${EXTRAS_DIR}
+				${EXTRAS_OUTPUT}
+		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/pack_extras.py
+				${EXTRAS_FILES}
+		COMMENT "Generating extras.pk3..."
+	)
+	
+	add_custom_target(generate_extras ALL
+		DEPENDS ${EXTRAS_OUTPUT}
+	)
+	
+	install(
+		FILES "${EXTRAS_OUTPUT}"
+		DESTINATION ${GAME_DIR}
+	)
+endif()
 
 # copy pre-generated config files to psvita bundle
 if(VITA)
