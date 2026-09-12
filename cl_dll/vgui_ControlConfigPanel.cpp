@@ -15,6 +15,7 @@
 #include <VGUI_DataInputStream.h>
 #include <VGUI.h>
 #include <VGUI_TextEntry.h>
+#include "safe_snprintf.h"
 
 using namespace vgui;
 
@@ -53,7 +54,7 @@ public:
 	virtual Panel *getCellRenderer( int column, int row, bool columnSelected, bool rowSelected, bool cellSelected )
 	{
 		char cvar[128], desc[128], bind[128], bindAlt[128];
-		_controlConfigPanel->GetCVar( row, cvar, 128, desc, 128 );
+		_controlConfigPanel->GetCVar( row, cvar, sizeof( cvar ), desc, sizeof( desc ));
 
 		if ( cellSelected )
 		{
@@ -73,38 +74,38 @@ public:
 
 		switch ( column )
 		{
-		case 0:
-		{
-			_label->setText( desc );
-			_label->setContentAlignment( Label::a_west );
-			break;
-		}
-		case 1:
-		{
-			_controlConfigPanel->GetCVarBind( cvar, bind, 128, bindAlt, 128 );
-			_label->setText( bind );
-			_label->setContentAlignment( Label::a_center );
-			break;
-		}
-		case 2:
-		{
-			_controlConfigPanel->GetCVarBind( cvar, bind, 128, bindAlt, 128 );
-			_label->setText( bindAlt );
-			_label->setContentAlignment( Label::a_center );
-			break;
-		}
-		default:
-		{
-			_label->setText( "" );
-			break;
-		}
+			case 0:
+			{
+				_label->setText( desc );
+				_label->setContentAlignment( Label::a_west );
+				break;
+			}
+			case 1:
+			{
+				_controlConfigPanel->GetCVarBind( cvar, bind, sizeof( bind ), 0, 0 );
+				_label->setText( bind );
+				_label->setContentAlignment( Label::a_center );
+				break;
+			}
+			case 2:
+			{
+				_controlConfigPanel->GetCVarBind( cvar, 0, 0, bindAlt, sizeof( bindAlt ));
+				_label->setText( bindAlt );
+				_label->setContentAlignment( Label::a_center );
+				break;
+			}
+			default:
+			{
+				_label->setText( "" );
+				break;
+			}
 		}
 
 		return _label;
 	}
 	virtual Panel *startCellEditing( int column, int row )
 	{
-		_textEntry->setText( "Goat", strlen( "Goat" ) );
+		_textEntry->setText( "Goat", sizeof( "Goat" ) - 1 );
 		_textEntry->requestFocus();
 		return _textEntry;
 	}
@@ -191,8 +192,10 @@ void ControlConfigPanel::AddCVarFromInputStream( InputStream *is )
 	while ( 1 )
 	{
 		char buf[256], cvar[128], desc[128];
-		dis.readLine( buf, 256, success );
-		if ( !success )
+
+		dis.readLine( buf, sizeof( buf ), success );
+
+		if( !success )
 		{
 			break;
 		}
@@ -205,8 +208,19 @@ void ControlConfigPanel::AddCVarFromInputStream( InputStream *is )
 
 void ControlConfigPanel::GetCVarBind( const char *cvar, char *bind, int bindLen, char *bindAlt, int bindAltLen )
 {
-	sprintf( bind, "%s : Bind", cvar );
-	sprintf( bindAlt, "%s : BindAlt", cvar );
+	int len;
+
+	if( bind && bindLen > 0 )
+	{
+		len = safe_snprintf( bind, bindLen, "%s : Bind", cvar );
+		if( len < 0 ) strcpy( &bind[bindLen - sizeof(" : Bind")], " : Bind" );
+	}
+
+	if( bindAlt && bindAltLen > 0 )
+	{
+		len = safe_snprintf( bindAlt, bindAltLen, "%s : BindAlt", cvar );
+		if( len < 0 ) strcpy( &bindAlt[bindAltLen - sizeof(" : BindAlt")], " : BindAlt" );
+	}
 }
 
 void ControlConfigPanel::SetCVarBind( const char *cvar, const char *bind, const char *bindAlt )

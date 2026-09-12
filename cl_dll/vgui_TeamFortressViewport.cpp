@@ -158,7 +158,7 @@ int sTFValidClassInts[] = {
 // Get the name of TGA file, based on GameDir
 char *GetVGUITGAName( const char *pszName )
 {
-	int i;
+	int i, len;
 	char sz[256];
 	static char gd[256];
 	const char *gamedir;
@@ -167,11 +167,12 @@ char *GetVGUITGAName( const char *pszName )
 		i = 320;
 	else
 		i = 640;
-	sprintf( sz, pszName, i );
+
+	safe_snprintf( sz, sizeof( sz ), pszName, i );
 
 	gamedir = gEngfuncs.pfnGetGameDirectory();
-	sprintf( gd, "%s/gfx/vgui/%s.tga", gamedir, sz );
-
+	len = safe_snprintf( gd, sizeof( gd ), "%s/gfx/vgui/%s.tga", gamedir, sz );
+	if( len < 0 ) return 0;
 	return gd;
 }
 
@@ -1587,7 +1588,7 @@ void TeamFortressViewport::UpdateSpectatorPanel()
 		m_pSpectatorPanel->m_BottomMainButton->setText( pBottomText );
 
 		// update extra info field
-		char szText[64];
+		char szText[256];
 
 		if ( gEngfuncs.IsSpectateOnly() )
 		{
