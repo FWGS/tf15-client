@@ -1,6 +1,3 @@
-[submodule "vgui_dll"]
-	path = 3rdparty/vgui_dll
-	url = https://github.com/FWGS/openvgui
 [submodule "mainui"]
 	path = 3rdparty/mainui_cpp
 	url = https://github.com/Velaron/mainui_cpp
@@ -8,6 +5,3 @@
 [submodule "particleman"]
 	path = 3rdparty/particleman
 	url = https://github.com/Velaron/particleman
-[submodule "vgui_support"]
-	path = 3rdparty/vgui_support
-	url = https://github.com/Velaron/vgui_support
