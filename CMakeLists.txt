@@ -51,7 +51,6 @@ option(USE_VOICEMGR "Enable VOICE MANAGER." OFF)
 option(BUILD_CLIENT "Build client dll" ON)
 option(BUILD_SERVER "Build server dll" OFF)
 option(BUILD_MENU "Build menu dll" ON)
-option(BUILD_VGUI "Build vgui" OFF)
 option(BUILD_PMAN "Build particleman" OFF)
 
 option(GOLDSOURCE_SUPPORT "Build goldsource compatible client library" OFF)
@@ -69,6 +68,17 @@ set(SERVER_LIBRARY_NAME "tfc" CACHE STRING "Library name for Linux/MacOS/Windows
 # Xash3D FWGS Library Naming Scheme compliance
 # see documentation: https://github.com/FWGS/xash3d-fwgs/blob/master/Documentation/library-naming.md
 include(LibraryNaming)
+
+# engine is obligated to provide VGUI interface in 32-bit builds on Windows/Linux as shared library
+# on platforms supported only by Xash3D FWGS, FreeVGUI is linked statically into client library
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" SYSTEM_PROCESSOR_LOWER)
+if((WIN32 OR CMAKE_SYSTEM_NAME STREQUAL "Linux")
+	AND CMAKE_SIZEOF_VOID_P EQUAL 4
+	AND SYSTEM_PROCESSOR_LOWER MATCHES "^(x86|i[3-6]86|x86_64|amd64|em64t)$")
+	set(USE_STATIC_FREEVGUI OFF)
+else()
+	set(USE_STATIC_FREEVGUI ON)
+endif()
 
 if(MINGW)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libstdc++ -static-libgcc")
@@ -104,14 +114,14 @@ if(BUILD_MENU)
 	add_subdirectory(3rdparty/mainui_cpp)
 endif()
 
-if(ANDROID OR CMAKE_SIZEOF_VOID_P EQUAL 8)
-	set(VGUI_STATIC ON CACHE BOOL "" FORCE)
-	add_subdirectory(3rdparty/vgui_dll)
-
-	set(XASH_SDK ${CMAKE_CURRENT_SOURCE_DIR})
-	add_subdirectory(3rdparty/vgui_support)
-elseif(BUILD_VGUI)
-	add_subdirectory(3rdparty/vgui_dll)
+if(BUILD_CLIENT)
+	# FreeVGUI isn't installed: on 32-bit x86 Windows and Linux the engine ships vgui library, the client only links against it
+	# FreeVGUI's own headers are used by the client code, so they're exported to anything linking it
+	add_subdirectory(3rdparty/freevgui)
+	target_include_directories(vgui INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/freevgui")
+	if(USE_STATIC_FREEVGUI)
+		target_include_directories(vgui PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/engine")
+	endif()
 endif()
 
 if(BUILD_PMAN)

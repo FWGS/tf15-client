@@ -51,6 +51,10 @@ if(GOLDSOURCE_SUPPORT)
 	add_definitions(-DGOLDSOURCE_SUPPORT)
 endif()
 
+if(USE_STATIC_FREEVGUI)
+	add_definitions(-DINTERNAL_VGUI_SUPPORT)
+endif()
+
 if(GOLDSOURCE_DEFAULT_FLAGS)
 	add_definitions(-DPOSIX -D_POSIX -DGNUC)
 	add_compile_options(-fpermissive -fno-strict-aliasing -fexpensive-optimizations)
@@ -146,15 +150,8 @@ set(CLDLL_SOURCES
 
 include_directories(. hl/ ../dlls ../dlls/tfc ../common ../engine ../pm_shared ../game_shared ../public)
 
-if(ANDROID OR CMAKE_SIZEOF_VOID_P EQUAL 8)
-    include_directories(../3rdparty/vgui_dll/include)
-elseif(NOT BUILD_VGUI)
-    SET(CMAKE_SKIP_RPATH TRUE)
-    link_directories(${CMAKE_SOURCE_DIR}/3rdparty/vgui_support/vgui-dev/lib)
-    include_directories(${CMAKE_SOURCE_DIR}/3rdparty/vgui_support/vgui-dev/include)
-endif()
-
 add_library(${CLDLL_LIBRARY} MODULE ${CLDLL_SOURCES})
+target_link_libraries(${CLDLL_LIBRARY} vgui)
 
 if(GOLDSOURCE_SUPPORT)
 	target_link_libraries(${CLDLL_LIBRARY} ${CMAKE_DL_LIBS})
@@ -162,22 +159,6 @@ endif()
 
 if(WIN32)
 	target_link_libraries(${CLDLL_LIBRARY} user32.lib winmm.lib ws2_32.lib)
-endif()
-
-if(ANDROID OR CMAKE_SIZEOF_VOID_P EQUAL 8)
-    target_link_libraries(${CLDLL_LIBRARY} vgui_support)
-    target_link_libraries(${CLDLL_LIBRARY} vgui)
-elseif(NOT BUILD_VGUI)
-    if (WIN32)
-        add_library(vgui SHARED IMPORTED)
-        set_property(TARGET vgui PROPERTY IMPORTED_LOCATION "${CMAKE_SOURCE_DIR}/3rdparty/vgui_support/vgui-dev/lib/win32_vc6/vgui.dll")
-        set_property(TARGET vgui PROPERTY IMPORTED_IMPLIB "${CMAKE_SOURCE_DIR}/3rdparty/vgui_support/vgui-dev/lib/win32_vc6/vgui.lib")
-        target_link_libraries(${CLDLL_LIBRARY} vgui)
-    elseif(APPLE)
-        target_link_libraries(${CLDLL_LIBRARY} "-Wl,--no-undefined -L${CMAKE_SOURCE_DIR}/3rdparty/vgui_support/vgui-dev/lib vgui.dylib")
-    else()
-        target_link_libraries(${CLDLL_LIBRARY} :vgui.so)
-    endif()
 endif()
 
 set_target_postfix(${CLDLL_LIBRARY})
