@@ -20,6 +20,7 @@
 
 #include "const.h"
 #include "usercmd.h"
+#include "com_model.h"
 #include "pm_defs.h"
 #include "pm_shared.h"
 #include "pm_movevars.h"
