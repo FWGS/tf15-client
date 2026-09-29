@@ -5,44 +5,19 @@
 // $NoKeywords: $
 //=============================================================================
 
-// There are hud.h's coming out of the woodwork so this ensures that we get the right one.
-#if defined( DMC_BUILD )
-#include "../dmc/cl_dll/hud.h"
-#include "../dmc/cl_dll/cl_util.h"
-#elif defined( RICOCHET_BUILD )
-#include "../ricochet/cl_dll/hud.h"
-#include "../ricochet/cl_dll/cl_util.h"
-#else
-#include "../cl_dll/hud.h"
-#include "../cl_dll/cl_util.h"
-#endif
+#include "hud.h"
 
+#include "cl_util.h"
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
-
-#if defined( DMC_BUILD )
-#include "../dmc/cl_dll/parsemsg.h"
-#include "../dmc/cl_dll/hud_servers.h"
-#include "../dmc/cl_dll/demo.h"
-#elif defined( RICOCHET_BUILD )
-#include "../ricochet/cl_dll/parsemsg.h"
-#include "../ricochet/cl_dll/hud_servers.h"
-#include "../ricochet/cl_dll/demo.h"
-#else
-#include "../common/parsemsg.h"
-#include "../cl_dll/hud_servers.h"
-#include "../cl_dll/demo.h"
-#endif
-
+#include "parsemsg.h"
+#include "demo.h"
 #include "demo_api.h"
 #include "voice_status.h"
 #include "r_efx.h"
 #include "entity_types.h"
-#include <VGUI_ActionSignal.h>
-#include <VGUI_Scheme.h>
-#include <VGUI_TextImage.h>
-#include <VGUI_MouseCode.h>
+#include "VGUI_Scheme.h"
 #include "vgui_loadtga.h"
 #include "vgui_helpers.h"
 

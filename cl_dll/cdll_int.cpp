@@ -49,6 +49,12 @@ TeamFortressViewport *gViewPort = NULL;
 
 mobile_engfuncs_t *gMobileEngfuncs = NULL;
 
+#if defined( INTERNAL_VGUI_SUPPORT )
+// declare InitVGUISupportAPI so that linker doesn't remove it because nothing references it
+extern "C" void InitVGUISupportAPI( void *api );
+void *g_pKeepVGUISupport = (void *)InitVGUISupportAPI;
+#endif
+
 #ifdef USE_PARTICLEMAN
 #include "particleman.h"
 

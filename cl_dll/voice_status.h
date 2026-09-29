@@ -5,15 +5,14 @@
 // $NoKeywords: $
 //=============================================================================
 
-#ifndef __VOICE_STATUS_H__
-#define __VOICE_STATUS_H__
+#ifndef VOICE_STATUS_H
+#define VOICE_STATUS_H
+#pragma once
 
-#include <VGUI_Label.h>
-#include <VGUI_LineBorder.h>
-#include <VGUI_ImagePanel.h>
-#include <VGUI_BitmapTGA.h>
-#include <VGUI_InputSignal.h>
-#include <VGUI_Button.h>
+
+#include "VGUI_Label.h"
+#include "VGUI_ImagePanel.h"
+#include "VGUI_BitmapTGA.h"
 #include "voice_common.h"
 #include "cl_entity.h"
 #include "voice_banmgr.h"
