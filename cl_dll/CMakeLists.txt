@@ -81,6 +81,7 @@ set(CLDLL_SOURCES
 	tfc/tf_objects.cpp
 	tfc/tf_weapons.cpp
 	../public/interface.cpp
+	../public/safe_snprintf.c
 	ammo.cpp
 	ammo_secondary.cpp
 	ammohistory.cpp
@@ -146,9 +147,10 @@ set(CLDLL_SOURCES
 	vgui_SpectatorPanel.cpp
 	vgui_TeamFortressViewport.cpp
 	vgui_teammenu.cpp
-	../game_shared/voice_status.cpp)
+	voice_status.cpp)
 
 include_directories(. hl/ ../dlls ../dlls/tfc ../common ../engine ../pm_shared ../game_shared ../public)
+include_directories(../utils/vgui/include)
 
 add_library(${CLDLL_LIBRARY} MODULE ${CLDLL_SOURCES})
 target_link_libraries(${CLDLL_LIBRARY} vgui)

@@ -116,9 +116,7 @@ endif()
 
 if(BUILD_CLIENT)
 	# FreeVGUI isn't installed: on 32-bit x86 Windows and Linux the engine ships vgui library, the client only links against it
-	# FreeVGUI's own headers are used by the client code, so they're exported to anything linking it
 	add_subdirectory(3rdparty/freevgui)
-	target_include_directories(vgui INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/freevgui")
 	if(USE_STATIC_FREEVGUI)
 		target_include_directories(vgui PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/engine")
 	endif()
