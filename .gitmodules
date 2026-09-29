@@ -5,3 +5,6 @@
 [submodule "particleman"]
 	path = 3rdparty/particleman
 	url = https://github.com/Velaron/particleman
+[submodule "freevgui"]
+	path = 3rdparty/freevgui
+	url = https://github.com/FWGS/freevgui.git
