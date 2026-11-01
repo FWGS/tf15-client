@@ -4,7 +4,7 @@
 	branch = tf15-client
 [submodule "particleman"]
 	path = 3rdparty/particleman
-	url = https://github.com/Velaron/particleman
+	url = https://github.com/kvstepchenko/particleman_goldsrc_8684
 [submodule "freevgui"]
 	path = 3rdparty/freevgui
 	url = https://github.com/FWGS/freevgui.git
