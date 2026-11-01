@@ -1896,7 +1896,7 @@ void EV_TFC_RailDie( particle_s *particle )
 int EV_TFC_IsAlly( int idx1, int idx2 )
 {
 	if ( EV_TFC_GetTeamIndex( idx1 ) < 1 || EV_TFC_GetTeamIndex( idx1 ) > 4
-	     || EV_TFC_GetTeamIndex( idx2 ) > 1 || EV_TFC_GetTeamIndex( idx2 ) > 4 )
+	     || EV_TFC_GetTeamIndex( idx2 ) < 1 || EV_TFC_GetTeamIndex( idx2 ) > 4 )
 	{
 		return 0;
 	}
