@@ -1,9 +1,5 @@
 name: Build
-on:
-  push:
-    branches:
-      - master
-      - new-mod-api
+on: [ push, pull_request ]
 
 jobs:
   android:
@@ -11,22 +7,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           java-version: 17
           distribution: 'temurin'
           cache: gradle
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
       - name: Build
-        run: ./gradlew assembleGitContinuous
+        id: build
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+        run: |
+          if [[ -n "$SIGNING_KEY" ]]; then
+            echo "variant=continuous" >> "$GITHUB_OUTPUT"
+            ./gradlew assembleGitContinuous
+          else
+            echo "variant=debug" >> "$GITHUB_OUTPUT"
+            ./gradlew assembleGitDebug
+          fi
         working-directory: android
       - name: Sign APK
+        if: steps.build.outputs.variant == 'continuous'
         uses: r0adkll/sign-android-release@v1
         with:
           releaseDirectory: android/app/build/outputs/apk/git/continuous
@@ -37,10 +44,10 @@ jobs:
         env:
           BUILD_TOOLS_VERSION: "36.0.0"
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: Android
-          path: android/app/build/outputs/apk/git/continuous/app-git-continuous-unsigned-signed.apk
+          path: ${{ steps.build.outputs.variant == 'continuous' && 'android/app/build/outputs/apk/git/continuous/app-git-continuous-unsigned-signed.apk' || 'android/app/build/outputs/apk/git/debug/app-git-debug.apk' }}
   windows:
     name: Windows
     runs-on: windows-latest
@@ -50,7 +57,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
@@ -67,7 +74,7 @@ jobs:
         run: cpack --config CPackConfig.cmake
         working-directory: build
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ runner.os }}-${{ matrix.arch }}
           path: build/*.zip
@@ -80,7 +87,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           submodules: recursive
@@ -100,7 +107,7 @@ jobs:
         run: cpack --config CPackConfig.cmake
         working-directory: build
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ runner.os }}-${{ matrix.arch }}
           path: build/*.tar.gz
@@ -108,11 +115,13 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     needs: [android, windows, linux]
+    if: github.event_name == 'push'
     steps:
       - name: Fetch artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
+
       - name: Remove old release
-        uses: ClementTsang/delete-tag-and-release@v0.3.1
+        uses: ClementTsang/delete-tag-and-release@v0.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -135,7 +144,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_name: ${{ env.GITHUB_REPOSITORY }}
-          repo_token: ${{ secrets.REPO_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           file_glob: true
           file: TF15Client-*
           tag: ${{ github.ref_name == 'master' && 'continuous' || format('continuous-{0}', github.ref_name) }}
