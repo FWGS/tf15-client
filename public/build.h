@@ -62,33 +62,36 @@ Then you can use another oneliner to query all variables:
 #undef XASH_BIG_ENDIAN
 #undef XASH_DOS4GW
 #undef XASH_E2K
-#undef XASH_EMSCRIPTEN
 #undef XASH_FREEBSD
 #undef XASH_HAIKU
+#undef XASH_HURD
 #undef XASH_IOS
 #undef XASH_IRIX
-#undef XASH_JS
 #undef XASH_LINUX
 #undef XASH_LITTLE_ENDIAN
 #undef XASH_MIPS
 #undef XASH_MOBILE_PLATFORM
 #undef XASH_NETBSD
+#undef XASH_NSWITCH
 #undef XASH_OPENBSD
+#undef XASH_OSX
 #undef XASH_POSIX
 #undef XASH_PPC
+#undef XASH_PS4
+#undef XASH_PSP
+#undef XASH_PSVITA
 #undef XASH_RISCV
 #undef XASH_RISCV_DOUBLEFP
 #undef XASH_RISCV_SINGLEFP
 #undef XASH_RISCV_SOFTFP
 #undef XASH_SERENITY
+#undef XASH_SPARC
 #undef XASH_SUNOS
 #undef XASH_TERMUX
-#undef XASH_WIN32
-#undef XASH_X86
-#undef XASH_NSWITCH
-#undef XASH_PSVITA
 #undef XASH_WASI
 #undef XASH_WASM
+#undef XASH_WIN32
+#undef XASH_X86
 
 //================================================================
 //
@@ -99,9 +102,15 @@ Then you can use another oneliner to query all variables:
 	#define XASH_WIN32 1
 #elif defined __WATCOMC__ && defined __DOS__
 	#define XASH_DOS4GW 1
+#elif defined __psp__
+	#define XASH_PSP 1
 #else // POSIX compatible
 	#define XASH_POSIX 1
-	#if defined __linux__
+	// OpenOrbis toolchain targets FreeBSD, but libc++ headers undefine __FreeBSD__
+	// so PS4 must be checked first to get same result in C and C++
+	#if defined __ORBIS__
+		#define XASH_PS4 1
+	#elif defined __linux__
 		#if defined __ANDROID__
 			#define XASH_ANDROID 1
 			#if defined __TERMUX__
@@ -126,6 +135,8 @@ Then you can use another oneliner to query all variables:
 		#define XASH_APPLE 1
 		#if TARGET_OS_IOS
 			#define XASH_IOS 1
+		#elif !defined( TARGET_OS_OSX ) || TARGET_OS_OSX // TARGET_OS_OSX is only defined in 10.12+
+			#define XASH_OSX 1
 		#endif // TARGET_OS_IOS
 	#elif defined __SWITCH__
 		#define XASH_NSWITCH 1
@@ -135,8 +146,8 @@ Then you can use another oneliner to query all variables:
 		#define XASH_WASI 1
 	#elif defined __sun__
 		#define XASH_SUNOS 1
-	#elif defined __EMSCRIPTEN__
-		#define XASH_EMSCRIPTEN 1
+	#elif defined __gnu_hurd__
+		#define XASH_HURD 1
 	#else
 		#error
 	#endif
@@ -179,6 +190,14 @@ Then you can use another oneliner to query all variables:
 	#endif // !XASH_WIN32
 #endif
 
+// both macros are always defined, so they can be used in #if and as plain C expressions
+#ifndef XASH_BIG_ENDIAN
+	#define XASH_BIG_ENDIAN 0
+#endif
+#ifndef XASH_LITTLE_ENDIAN
+	#define XASH_LITTLE_ENDIAN 0
+#endif
+
 //================================================================
 //
 //           CPU ARCHITECTURE DEFINES
@@ -194,13 +213,10 @@ Then you can use another oneliner to query all variables:
 	#define XASH_ARM   8
 #elif defined __mips__
 	#define XASH_MIPS 1
-// commented out to avoid misdetection, modern Emscripten versions target WASM only
-//#elif defined __EMSCRIPTEN__
-//	#define XASH_JS 1
 #elif defined __e2k__
 	#define XASH_64BIT 1
 	#define XASH_E2K 1
-#elif defined __PPC__ || defined __powerpc__
+#elif defined __PPC__ || defined __powerpc__ || defined __ppc__
 	#define XASH_PPC 1
 	#if defined __PPC64__ || defined __powerpc64__
 		#define XASH_64BIT 1
@@ -251,6 +267,11 @@ Then you can use another oneliner to query all variables:
 		#define XASH_64BIT 1
 	#endif
 	#define XASH_WASM 1
+#elif defined __sparc__
+	#define XASH_SPARC 1
+	#if defined __arch64__
+		#define XASH_64BIT 1
+	#endif
 #else
 	#error "Place your architecture name here! If this is a mistake, try to fix conditions above and report a bug"
 #endif
