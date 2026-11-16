@@ -894,11 +894,9 @@ void ScorePanel::mousePressed( MouseCode code, Panel *panel )
 				char string[256];
 				char string1[1024];
 				int len;
-				if (GetClientVoiceMgr()->IsPlayerBlocked(iPlayer))
 				if ( GetClientVoiceMgr()->IsPlayerBlocked( iPlayer ) )
 				{
 					// remove mute
-					GetClientVoiceMgr()->SetPlayerBlockedState( iPlayer, false );
 					GetClientVoiceMgr()->SetPlayerBlockedState( iPlayer, false );
 
 					safe_snprintf( string1, sizeof( string1 ), CHudTextMessage::BufferedLocaliseTextString( "#Unmuted" ), pl_info->name );
@@ -907,7 +905,6 @@ void ScorePanel::mousePressed( MouseCode code, Panel *panel )
 				else
 				{
 					// mute the player
-					GetClientVoiceMgr()->SetPlayerBlockedState( iPlayer, true );
 					GetClientVoiceMgr()->SetPlayerBlockedState( iPlayer, true );
 
 					safe_snprintf( string1, sizeof( string1 ), CHudTextMessage::BufferedLocaliseTextString( "#Muted" ), pl_info->name );
