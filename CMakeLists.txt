@@ -50,7 +50,6 @@ option(USE_VOICEMGR "Enable VOICE MANAGER." OFF)
 
 option(BUILD_CLIENT "Build client dll" ON)
 option(BUILD_SERVER "Build server dll" OFF)
-option(BUILD_MENU "Build menu dll" ON)
 option(BUILD_PMAN "Build particleman" OFF)
 
 option(GOLDSOURCE_SUPPORT "Build goldsource compatible client library" OFF)
@@ -108,10 +107,6 @@ endif()
 
 if(BUILD_SERVER)
 	add_subdirectory(dlls)
-endif()
-
-if(BUILD_MENU)
-	add_subdirectory(3rdparty/mainui_cpp)
 endif()
 
 if(BUILD_CLIENT)

@@ -1,7 +1,3 @@
-[submodule "mainui"]
-	path = 3rdparty/mainui_cpp
-	url = https://github.com/FWGS/mainui_cpp
-	branch = tf15-client
 [submodule "particleman"]
 	path = 3rdparty/particleman
 	url = https://github.com/kvstepchenko/particleman_goldsrc_8684

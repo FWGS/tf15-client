@@ -65,15 +65,6 @@ void CL_LoadParticleMan( void );
 void CL_UnloadParticleMan( void );
 #endif
 
-#include "IGameMenuExports.h"
-CSysModule *g_hMainUIModule = NULL;
-IGameMenuExports *g_pMainUI = NULL;
-
-#ifdef TF15CLIENT_ADDITIONS
-void CL_LoadMainUI( void );
-void CL_UnloadMainUI( void );
-#endif // TF15CLIENT_ADDITIONS
-
 void InitInput( void );
 void EV_HookEvents( void );
 void IN_Commands( void );
@@ -197,10 +188,6 @@ int DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 #ifdef USE_PARTICLEMAN
 	CL_LoadParticleMan();
 #endif
-
-#ifdef TF15CLIENT_ADDITIONS
-	CL_LoadMainUI();
-#endif // TF15CLIENT_ADDITIONS
 
 	return 1;
 }
@@ -420,44 +407,6 @@ bool IsXashFWGS()
 	return gMobileEngfuncs != NULL;
 }
 
-void CL_UnloadMainUI( void )
-{
-	Sys_UnloadModule( g_hMainUIModule );
-
-	g_pMainUI = NULL;
-	g_hMainUIModule = NULL;
-}
-
-void CL_LoadMainUI( void )
-{
-	char szDir[MAX_PATH];
-
-#if defined( __ANDROID__ )
-	snprintf( szDir, 1024, "%s/%s", getenv( "XASH3D_GAMELIBDIR" ), MAINUI_DLLNAME );
-#else
-	if ( gEngfuncs.COM_ExpandFilename( MAINUI_DLLNAME, szDir, sizeof( szDir ) ) == false )
-	{
-		CL_UnloadMainUI();
-		return;
-	}
-#endif
-
-	g_hMainUIModule = Sys_LoadModule( szDir );
-	CreateInterfaceFn MainUIFactory = Sys_GetFactory( g_hMainUIModule );
-
-	if ( MainUIFactory == NULL )
-	{
-		CL_UnloadMainUI();
-		return;
-	}
-
-	g_pMainUI = (IGameMenuExports *)MainUIFactory( GAMEMENUEXPORTS_INTERFACE_VERSION, NULL );
-
-	if ( g_pMainUI )
-	{
-		g_pMainUI->Initialize( CreateInterface );
-	}
-}
 #endif // TF15CLIENT_ADDITIONS
 #include "cl_dll/IGameClientExports.h"
 
